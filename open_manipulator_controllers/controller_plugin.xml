@@ -4,4 +4,11 @@
       GravityCompensationController
     </description>
   </class>
+
+  <class name="open_manipulator_controllers/ImpedanceController" type="open_manipulator_controllers::ImpedanceController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      ImpedanceController
+    </description>
+  </class>
+  
 </library>
