@@ -13,7 +13,9 @@
 
   <!-- startup simulated world and spawn robot-->
   <group if="$(arg sim)">
-    <include file="$(find open_manipulator_hw)/launch/open_manipulator_gazebo.launch"/>
+    <include file="$(find open_manipulator_hw)/launch/open_manipulator_gazebo.launch">
+      <arg name="interface_type" value="effort"/>
+    </include>
   </group>
 
   <!-- controller utils -->
