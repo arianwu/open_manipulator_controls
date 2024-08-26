@@ -77,9 +77,34 @@ bool ImpedanceController::init(hardware_interface::RobotHW* hw,
   }
 
   // Obtain other values (TODO)
-  int num = 7;
-  Kd_ = Eigen::Matrix3d::Identity() * 25;//num * num;
-  Bd_ = Eigen::Matrix3d::Identity() * 0;//num * 2;
+  // int num = 7;
+  // Kd_ = Eigen::Matrix3d::Identity() * 25;//num * num;
+  // Bd_ = Eigen::Matrix3d::Identity() * 10;//num * 2;
+
+  // Retrieve Desired Stiffness Matrix Kd
+  std::vector<double> param_vector;
+  if (!nh.getParam("desired_stiffness", param_vector)) {
+    ROS_ERROR("[ImpedanceController] Could not find desired stiffness Kd");
+    return false;
+  }
+  if (param_vector.size() != 9) {
+    ROS_ERROR("[ImpedanceController] Stiffness Matrix size incorrect. Expected 9, got %zu", param_vector.size());
+    return false;
+  }
+  Kd_ = Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>>(param_vector.data());
+  ROS_INFO_STREAM("\n[ImpedanceController] Initialized Stiffness Matrix Kd as:\n"<<Kd_);
+
+  // Retrieve Desired Damping Matrix Bd
+  if (!nh.getParam("desired_damping", param_vector)) {
+    ROS_ERROR("[ImpedanceController] Could not find desired damping Bd");
+    return false;
+  }
+  if (param_vector.size() != 9) {
+    ROS_ERROR("[ImpedanceController] Damping Matrix size incorrect. Expected 9, got %zu", param_vector.size());
+    return false;
+  }
+  Bd_ = Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>>(param_vector.data());
+  ROS_INFO_STREAM("\n[ImpedanceController] Initialized Damping Matrix Bd as:\n"<<Bd_);
 
   // Resize Variables
   q_.resize(n_joints_);
@@ -108,7 +133,7 @@ bool ImpedanceController::init(hardware_interface::RobotHW* hw,
   Jac_solver_.reset(new KDL::ChainJntToJacSolver(kdl_chain_));
   Jac_dot_solver_.reset(new KDL::ChainJntToJacDotSolver(kdl_chain_));
 
-  std::remove("/home/sergio/ros_ws/src/robotis/open_manipulator_controls/open_manipulator_controllers/data/impendace_controller.txt");
+  // std::remove("/home/sergio/ros_ws/src/robotis/open_manipulator_controls/open_manipulator_controllers/data/impendace_controller.txt");
    
   ROS_INFO("[ImpedanceController] Succesfully Initialized Controller");
   return true;
@@ -174,9 +199,9 @@ void ImpedanceController::update(const ros::Time& time,
     effort_joint_handles_[i].setCommand(tau_(i));
   }
   
-  std::ofstream logfile("/home/sergio/ros_ws/src/robotis/open_manipulator_controls/open_manipulator_controllers/data/impendace_controller.txt", std::ios::app);
-  logfile << ros::Time::now().toSec() << "\t" << x_.x() << "\t" << x_.y() << "\t" << x_.z() << "\t" << tau_(0) << "\t" << tau_(1) << "\t" << tau_(2) << "\t" << tau_(3) << "\n";
-  logfile.close();
+  // std::ofstream logfile("/home/sergio/ros_ws/src/robotis/open_manipulator_controls/open_manipulator_controllers/data/impendace_controller.txt", std::ios::app);
+  // logfile << ros::Time::now().toSec() << "\t" << x_.x() << "\t" << x_.y() << "\t" << x_.z() << "\t" << tau_(0) << "\t" << tau_(1) << "\t" << tau_(2) << "\t" << tau_(3) << "\n";
+  // logfile.close();
   
 }
 
